@@ -163,6 +163,16 @@ data$SA.2 <- (2* pi * (((as.numeric(as.character(data$Length.mm.Time2))+ as.nume
 data$SA.3 <- (2* pi * (((as.numeric(as.character(data$Length.mm.Time3))+ as.numeric(as.character(data$Width.mm.Time3))))/4)^2)/100
 data$SA.4 <- (2* pi * (((as.numeric(as.character(data$Length.mm.Time4))+ as.numeric(as.character(data$Width.mm.Time4))))/4)^2)/100
 
+#Plotting surface by time
+pdf("../Output/SA_by_Time.pdf", width=8.5, height=3.5)
+par(mfrow=c(1,5))
+boxplot(data$SA.0,main="Jan", ylim=c(0,50), ylab="Surface Area cm-2") 
+boxplot(data$SA.1,main="March", ylim=c(0,50), ylab="", yaxt = "n")
+boxplot(data$SA.2,main="May", ylim=c(0,50), ylab="", yaxt = "n") 
+boxplot(data$SA.3,main="August", ylim=c(0,50), ylab="", yaxt = "n") 
+boxplot(data$SA.4,main="November", ylim=c(0,50), ylab="", yaxt = "n") 
+dev.off()
+
 
 #Growth Normalized to surface area of each timepoint mg cm-2 day-1
 data$time1.growth <- (((data$Dry.Weigh.g.Time1 - data$Dry.Weigh.g.Time0)/(data$SA.1))/data$Days.Time1)*1000 #calculate growth rate 
