@@ -1,12 +1,11 @@
 #Title: Porites Buoyant Weight Data
 #Author: HM Putnam
-#Date Last Modified: 20181220
+#Date Last Modified: 20181224
 #See Readme file for details
 
 rm(list=ls()) #clears workspace 
 
 #Install Libraries
-if ("plyr" %in% rownames(installed.packages()) == 'FALSE') install.packages('plyr') 
 if ("ggplot2" %in% rownames(installed.packages()) == 'FALSE') install.packages('ggplot2') 
 if ("sciplot" %in% rownames(installed.packages()) == 'FALSE') install.packages('sciplot') 
 if ("plotrix" %in% rownames(installed.packages()) == 'FALSE') install.packages('plotrix') 
@@ -18,13 +17,10 @@ if ("gridExtra" %in% rownames(installed.packages()) == 'FALSE') install.packages
 
 #Read in required libraries
 ##### Include Versions of libraries
-library("plyr")
 library("ggplot2")
 library("sciplot")
 library("plotrix")
 library("reshape2")
-library("nlme") #mixed model, repeated measures ANOVA
-library("lsmeans") #mixed model posthoc  statistical comparisons
 library("tidyr")
 library("ggridges")
 library("gridExtra")
