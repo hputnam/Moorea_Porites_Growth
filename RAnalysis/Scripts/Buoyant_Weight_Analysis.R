@@ -5,21 +5,32 @@
 
 rm(list=ls()) #clears workspace 
 
+#Install Libraries
+if ("plyr" %in% rownames(installed.packages()) == 'FALSE') install.packages('plyr') 
+if ("ggplot2" %in% rownames(installed.packages()) == 'FALSE') install.packages('ggplot2') 
+if ("sciplot" %in% rownames(installed.packages()) == 'FALSE') install.packages('sciplot') 
+if ("plotrix" %in% rownames(installed.packages()) == 'FALSE') install.packages('plotrix') 
+if ("reshape2" %in% rownames(installed.packages()) == 'FALSE') install.packages('reshape2') 
+if ("tidyr" %in% rownames(installed.packages()) == 'FALSE') install.packages('ggridges') 
+if ("ggridges"  %in% rownames(installed.packages()) == 'FALSE') install.packages('ggridges') 
+if ("gridExtra" %in% rownames(installed.packages()) == 'FALSE') install.packages('gridExtra') 
+
+
 #Read in required libraries
 ##### Include Versions of libraries
-library('plyr')
-library('ggplot2')
+library("plyr")
+library("ggplot2")
 library("sciplot")
 library("plotrix")
 library("reshape2")
 library("nlme") #mixed model, repeated measures ANOVA
 library("lsmeans") #mixed model posthoc  statistical comparisons
-library(tidyr)
+library("tidyr")
 library("ggridges")
-if ("gridExtra" %in% rownames(installed.packages()) == 'FALSE') install.packages('gridExtra') 
 library("gridExtra")
-#Required Data files
 
+
+#Analysis of juvenile massive Porites growth through time in 2018
 
 #Timepoints
 #Time0 - 20180127
