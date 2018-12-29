@@ -118,11 +118,11 @@ data.3.curve <- subset(BW.data, Date==20180827)
 data.4.curve <- subset(BW.data, Date==20181101)
 
 par(mfrow=c(2,3))
-boxplot(data.0.curve$Dry.Weigh.g ~data.0.curve$TimePoint, main="Jan", ylim=c(0,50)) #examine data
-boxplot(data.1.curve$Dry.Weigh.g ~data.1.curve$TimePoint, main="March", ylim=c(0,50)) #examine data
-boxplot(data.2.curve$Dry.Weigh.g ~data.2.curve$TimePoint, main="May", ylim=c(0,50)) #examine data
-boxplot(data.3.curve$Dry.Weigh.g ~data.3.curve$TimePoint, main="August", ylim=c(0,50)) #examine data
-boxplot(data.4.curve$Dry.Weigh.g ~data.4.curve$TimePoint, main="November", ylim=c(0,50)) #examine data
+boxplot(data.0.curve$Dry.Weigh.g ~data.0.curve$TimePoint, main="Jan", ylim=c(0,50), ylab="dry weight g", las=2) #examine data
+boxplot(data.1.curve$Dry.Weigh.g ~data.1.curve$TimePoint, main="March", ylim=c(0,50), ylab="dry weight g", las=2) #examine data
+boxplot(data.2.curve$Dry.Weigh.g ~data.2.curve$TimePoint, main="May", ylim=c(0,50), ylab="dry weight g", las=2) #examine data
+boxplot(data.3.curve$Dry.Weigh.g ~data.3.curve$TimePoint, main="August", ylim=c(0,50), ylab="dry weight g", las=2) #examine data
+boxplot(data.4.curve$Dry.Weigh.g ~data.4.curve$TimePoint, main="November", ylim=c(0,50), ylab="dry weight g", las=2) #examine data
 
 #Compare with single point standard
 #load coral weight data
@@ -156,21 +156,37 @@ plot(data.4.curve$Dry.Weigh.g,data.4$dry.weight)
 data <- reshape(BW.data, timevar = "TimePoint", drop = c("QC", "Mass.g","Temp.C"), idvar=c("Fragment.ID","Rack", "Depth" ), direction="wide")
 
 #average length and width for diameter, half, and apply to equation for area of a hemisphere 2*pi*r^2
-
 data$SA.0 <- (2* pi * (((as.numeric(as.character(data$Length.mm.Time0))+ as.numeric(as.character(data$Width.mm.Time0))))/4)^2)/100
 data$SA.1 <- (2* pi * (((as.numeric(as.character(data$Length.mm.Time1))+ as.numeric(as.character(data$Width.mm.Time1))))/4)^2)/100
 data$SA.2 <- (2* pi * (((as.numeric(as.character(data$Length.mm.Time2))+ as.numeric(as.character(data$Width.mm.Time2))))/4)^2)/100
 data$SA.3 <- (2* pi * (((as.numeric(as.character(data$Length.mm.Time3))+ as.numeric(as.character(data$Width.mm.Time3))))/4)^2)/100
 data$SA.4 <- (2* pi * (((as.numeric(as.character(data$Length.mm.Time4))+ as.numeric(as.character(data$Width.mm.Time4))))/4)^2)/100
 
+# average these between sizes of two adjacent timepoints
+data$mean.rad.1 <- (as.numeric(as.character(data$Length.mm.Time0))+ as.numeric(as.character(data$Width.mm.Time0))+ as.numeric(as.character(data$Length.mm.Time1))+ as.numeric(as.character(data$Width.mm.Time1)))/8
+data$SA.1 <- 2* pi *(data$mean.rad.1^2)/100
+
+data$mean.rad.2 <- (as.numeric(as.character(data$Length.mm.Time1))+ as.numeric(as.character(data$Width.mm.Time1))+ as.numeric(as.character(data$Length.mm.Time2))+ as.numeric(as.character(data$Width.mm.Time2)))/8
+data$SA.2 <- 2* pi *(data$mean.rad.2^2)/100
+
+data$mean.rad.3 <- (as.numeric(as.character(data$Length.mm.Time2))+ as.numeric(as.character(data$Width.mm.Time2))+ as.numeric(as.character(data$Length.mm.Time3))+ as.numeric(as.character(data$Width.mm.Time3)))/8
+data$SA.3 <- 2* pi *(data$mean.rad.3^2)/100
+
+data$mean.rad.4 <- (as.numeric(as.character(data$Length.mm.Time3))+ as.numeric(as.character(data$Width.mm.Time3))+ as.numeric(as.character(data$Length.mm.Time4))+ as.numeric(as.character(data$Width.mm.Time4)))/8
+data$SA.4 <- 2* pi *(data$mean.rad.4^2)/100
+
+data$mean.rad.all <- (as.numeric(as.character(data$Length.mm.Time4))+ as.numeric(as.character(data$Width.mm.Time4))+ as.numeric(as.character(data$Length.mm.Time0))+ as.numeric(as.character(data$Width.mm.Time0)))/8
+data$SA.all <- 2* pi *(data$mean.rad.all^2)/100
+
 #Plotting surface by time
 pdf("../Output/SA_by_Time.pdf", width=8.5, height=3.5)
-par(mfrow=c(1,5))
-boxplot(data$SA.0,main="Jan", ylim=c(0,50), ylab="Surface Area cm-2") 
+par(mfrow=c(1,6))
+boxplot(data$SA.0,main="Jan", ylim=c(0,50), ylab="Surface Area cm2") 
 boxplot(data$SA.1,main="March", ylim=c(0,50), ylab="", yaxt = "n")
 boxplot(data$SA.2,main="May", ylim=c(0,50), ylab="", yaxt = "n") 
 boxplot(data$SA.3,main="August", ylim=c(0,50), ylab="", yaxt = "n") 
 boxplot(data$SA.4,main="November", ylim=c(0,50), ylab="", yaxt = "n") 
+boxplot(data$SA.all,main="All", ylim=c(0,50), ylab="", yaxt = "n") 
 dev.off()
 
 
@@ -179,43 +195,51 @@ data$time1.growth <- (((data$Dry.Weigh.g.Time1 - data$Dry.Weigh.g.Time0)/(data$S
 data$time2.growth <- (((data$Dry.Weigh.g.Time2 - data$Dry.Weigh.g.Time1)/(data$SA.2))/data$Days.Time2)*1000 #calculate growth rate 
 data$time3.growth <- (((data$Dry.Weigh.g.Time3 - data$Dry.Weigh.g.Time2)/(data$SA.3))/data$Days.Time3)*1000 #calculate growth rate 
 data$time4.growth <- (((data$Dry.Weigh.g.Time4 - data$Dry.Weigh.g.Time3)/(data$SA.4))/data$Days.Time4)*1000 #calculate growth rate 
+data$time.all.growth <- (((data$Dry.Weigh.g.Time4 - data$Dry.Weigh.g.Time1)/(data$SA.all))/(sum(data$Days.Time1[1],data$Days.Time2[1],data$Days.Time3[2],data$Days.Time4[6])))*1000 #calculate growth rate 
 
 
-#removing -growth outliers
+#write.csv(cbind(data$Fragment.ID,data$Rack, data$Depth,data$time1.growth), file="../Output/time1.growth.csv")
+
+#removing negative growth outliers
 range(na.omit(data$time1.growth))
 outs <- which(data$time1.growth==min((na.omit(data$time1.growth))))
 data <- data[-outs,]
 range(na.omit(data$time1.growth))
 range(na.omit(data$time2.growth))
 range(na.omit(data$time3.growth))
-range(na.omit(data$time4.growth))
+data <- data[-26,] #major outlier that jumped too much in time 3 to be real growth data
+range(na.omit(data$time3.growth))
 outs <- which(data$time4.growth==min((na.omit(data$time4.growth))))
 data <- data[-outs,]
 range(na.omit(data$time4.growth))
 outs <- which(data$time4.growth==min((na.omit(data$time4.growth))))
 data <- data[-outs,]
 range(na.omit(data$time4.growth))
-
+range(na.omit(data$time.all.growth))
 
 #Plotting Data by time
-par(mfrow=c(2,2))
+par(mfrow=c(2,3))
 boxplot(data$time1.growth ~data$Date.Time1, ylim=c(0,5), main="Jan-March") 
 boxplot(data$time2.growth ~data$Date.Time2, ylim=c(0,5), main="March-May") 
 boxplot(data$time3.growth ~data$Date.Time3, ylim=c(0,5), main="May-August") 
 boxplot(data$time4.growth ~data$Date.Time4, ylim=c(0,5), main="August-November") 
+boxplot(data$time.all.growth ~data$Date.Time4, ylim=c(0,10), main="All") 
 
 #Display Data by Time
-data2 <-data[,c(1,2,3,49,50,51,52)]
-data2 <- data2 %>% gather(Time, growth, time1.growth,time2.growth,time3.growth, time4.growth)
+data2 <-as.data.frame(cbind(data$Fragment.ID, data$Rack, as.character(data$Depth), data$time1.growth, data$time2.growth, data$time3.growth, data$time4.growth, data$time.all.growth))
+colnames(data2) <- c("Fragment.ID", "Rack", "Depth", "time1.growth", "time2.growth", "time3.growth", "time4.growth", "All.growth")
+data2 <- data2 %>% gather(Time, growth, time1.growth,time2.growth,time3.growth, time4.growth, All.growth)
 data2$Time <- gsub('time1.growth', 'Jan-March', data2$Time)
 data2$Time <- gsub('time2.growth', 'March-May', data2$Time)
 data2$Time <- gsub('time3.growth', 'May-Aug', data2$Time)
 data2$Time <- gsub('time4.growth', 'Aug-Nov', data2$Time)
+data2$Time <- gsub('All.growth', 'Jan-Nov', data2$Time)
 data2 <- na.omit(data2)
-data2$Time <- factor(data2$Time, levels = c("Aug-Nov", "May-Aug", "March-May", "Jan-March"))
+data2$Depth <- as.factor(as.character(data2$Depth))
+data2$Time <- factor(data2$Time, levels = c("Aug-Nov", "May-Aug", "March-May", "Jan-March","Jan-Nov"))
+data2$growth <- as.numeric(data2$growth)
 
-
-Gro.Joy <- ggplot(data2, aes(y=as.factor(Time),x=growth)) +
+Gro.Joy <- ggplot(data2, aes(y=Time,x=growth)) +
   geom_density_ridges(alpha=0.5) +
   scale_y_discrete(expand = c(0.01, 0)) +  
   scale_x_continuous(expand = c(0, 0))+
@@ -233,14 +257,14 @@ G.n <- aggregate(growth ~ Time, data=data2, length)
 
 G <- cbind(G.mean, G.se$growth, G.n$growth)
 colnames(G) <- c("Time", "mean", "se", "n")
-G$Time <- factor(G$Time, levels = c("Jan-March", "March-May",   "May-Aug", "Aug-Nov"))
+G$Time <- factor(G$Time, levels = c("Jan-Nov", "Jan-March", "March-May",   "May-Aug", "Aug-Nov"))
 
   
 FigX <- ggplot(G, aes(x=Time, y=mean)) +
   geom_errorbar(aes(ymin=G$mean-G$se, ymax=G$mean+G$se), colour="black", width=.1, position = position_dodge(width = 0.2)) + #plot sem
   geom_point(aes(), position = position_dodge(width = 0.2), size=1) + #plot points
   #scale_shape_manual(values=c(1,19)) + #sets point shape manually
-  scale_x_discrete(limits=c("Jan-March","March-May", "May-Aug", "Aug-Nov")) +
+  scale_x_discrete(limits=c("Jan-Nov", "Jan-March","March-May", "May-Aug", "Aug-Nov")) +
   #geom_line(aes(linetype=Depth), position = position_dodge(width = 0.2), size = 0.5) + #add lines
   xlab("Time") + #Label the X Axis
   ylab("Growth mg cm-2 d-1") + #Label the Y Axis
@@ -255,7 +279,7 @@ FigX <- ggplot(G, aes(x=Time, y=mean)) +
         legend.key = element_blank()) #Set plot legend key
 FigX
 
-data2$Time <- factor(data2$Time, levels = c("Jan-March", "March-May",   "May-Aug", "Aug-Nov"))
+data2$Time <- factor(data2$Time, levels = c("Jan-Nov", "Jan-March", "March-May",   "May-Aug", "Aug-Nov"))
 data2$Depth <- factor(data2$Depth, levels = c("Shallow", "Deep"))
 
 Rack.Figs <- ggplot(data2, aes(x=Time, y=growth, fill=Depth)) +
@@ -263,36 +287,35 @@ Rack.Figs <- ggplot(data2, aes(x=Time, y=growth, fill=Depth)) +
   scale_fill_manual(values = c("gray", "white")) +
   geom_point(aes(shape=Depth), position = position_dodge(width = 0.9), size=1) +
   ylab("Growth mg cm-2 d-1") +
+  geom_vline(xintercept=1.5, linetype="dotted") +
   theme_classic()+
   theme(legend.position=c(0.55,0.9), axis.text.x = element_text(angle=90))
 Rack.Figs <- arrangeGrob(Rack.Figs, ncol=1)
 ggsave(file="../Output/Fig1_Growth_by_Rack.pdf", Rack.Figs, width = 3, height = 4, units = c("in"))
 
-
-
 #Test for differences in growth by rack
-anova(aov(data$time1.growth ~data$Rack))
-anova(aov(data$time2.growth ~data$Rack))
-anova(aov(data$time3.growth ~data$Rack))
-anova(aov(data$time4.growth ~data$Rack))
+anova(aov(data$time1.growth ~data$Depth))
+anova(aov(data$time2.growth ~data$Depth))
+anova(aov(data$time3.growth ~data$Depth))
+anova(aov(data$time4.growth ~data$Depth))
+anova(aov(data$time.all.growth ~data$Depth))
 
+# #reduced dataset of mass normalized growth
+G.mass <- data[,c(1:3,75,76,77,78,79)] 
+# 
+# G.mass.1 <- data[,c(1:3,69)] #subset only T1 data
+# G.mass.1 <- (na.omit(G.mass.1)) 
+# 
+# G.mass.2 <- data[,c(1:3,70)] #subset only T2 data
+# G.mass.2 <- (na.omit(G.mass.2))
+# 
+# G.mass.3 <- data[,c(1:3,71)] #subset only T3 data
+# G.mass.3 <- (na.omit(G.mass.3))
+# 
+# G.mass.4 <- data[,c(1:3,72)] #subset only T3 data
+# G.mass.4 <- (na.omit(G.mass.4))
 
-#reduced dataset of mass normalized growth
-G.mass <- data[,c(1:3,49,50,51,52)] 
-
-G.mass.1 <- data[,c(1:3,49)] #subset only T1 data
-G.mass.1 <- (na.omit(G.mass.1)) 
-
-G.mass.2 <- data[,c(1:3,50)] #subset only T2 data
-G.mass.2 <- (na.omit(G.mass.2))
-
-G.mass.3 <- data[,c(1:3,51)] #subset only T3 data
-G.mass.3 <- (na.omit(G.mass.3))
-
-G.mass.4 <- data[,c(1:3,52)] #subset only T3 data
-G.mass.4 <- (na.omit(G.mass.4))
-
-pdf("../Output/Fig3_growth_correlations.pdf", width=8.5, height=3.5)
+pdf("../Output/Fig3_month2month_growth_correlations.pdf", width=8.5, height=3.5)
 par(mfrow=c(1,3))
 plot(G.mass$time2.growth ~G.mass$time1.growth, 
      xlab = "Growth (Jan-March)", ylab = "Growth (March-May)", 
@@ -319,9 +342,40 @@ abline(mod3.4)
 mtext(paste0("Slope = ", round(mod3.4$coefficients[2], digits = 3),"    ", "R^2 = ", round(summary(mod3.4)$r.squared, digits = 2))) 
 dev.off()
 
+pdf("../Output/Fig4_month2all_growth_correlations.pdf", width=8.5, height=8.5)
+par(mfrow=c(2,2))
+plot(G.mass$time1.growth ~G.mass$time.all.growth, 
+     xlab = "Growth (Jan-Nov)", ylab = "Growth (Jan-March)", 
+     xlim=c(0,2.5), ylim=c(0,4), pch = 16)
+mod1.all <- lm(G.mass$time1.growth ~G.mass$time.all.growth)
+clip(0.3,2.1,1,4)
+abline(mod1.all)
+mtext(paste0("Slope = ", round(mod1.all$coefficients[2], digits = 3),"    ", "R^2 = ", round(summary(mod1.all)$r.squared, digits = 2))) 
 
+plot(G.mass$time2.growth ~G.mass$time.all.growth, 
+     xlab = "Growth (Jan-Nov)", ylab = "Growth (March-May)", 
+     xlim=c(0,2.5), ylim=c(0,4), pch = 16)
+mod2.all <- lm(G.mass$time2.growth ~G.mass$time.all.growth)
+clip(0.1,2.1,0.3,4)
+abline(mod2.all)
+mtext(paste0("Slope = ", round(mod2.all$coefficients[2], digits = 3),"    ", "R^2 = ", round(summary(mod2.all)$r.squared, digits = 2))) 
 
+plot(G.mass$time3.growth ~G.mass$time.all.growth, 
+     xlab = "Growth (Jan-Nov)", ylab = "Growth (May-August)", 
+     xlim=c(0,2.5), ylim=c(0,4), pch = 16)
+mod3.all <- lm(G.mass$time3.growth ~G.mass$time.all.growth)
+clip(0.1,2.1,0.3,4)
+abline(mod3.all)
+mtext(paste0("Slope = ", round(mod3.all$coefficients[2], digits = 3),"    ", "R^2 = ", round(summary(mod3.all)$r.squared, digits = 2))) 
 
+plot(G.mass$time4.growth ~G.mass$time.all.growth, 
+     xlab = "Growth (Jan-Nov)", ylab = "Growth (August-November)", 
+     xlim=c(0,2.5), ylim=c(0,4), pch = 16)
+mod4.all <- lm(G.mass$time4.growth ~G.mass$time.all.growth)
+clip(0.1,2.1,0.3,4)
+abline(mod4.all)
+mtext(paste0("Slope = ", round(mod4.all$coefficients[2], digits = 3),"    ", "R^2 = ", round(summary(mod4.all)$r.squared, digits = 2))) 
+dev.off()
 
 
 
