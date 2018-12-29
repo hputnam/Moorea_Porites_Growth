@@ -377,9 +377,41 @@ abline(mod4.all)
 mtext(paste0("Slope = ", round(mod4.all$coefficients[2], digits = 3),"    ", "R^2 = ", round(summary(mod4.all)$r.squared, digits = 2))) 
 dev.off()
 
+##### Scaling #####
+pdf("../Output/Fig5_Scaling.pdf", width=8.5, height=8.5)
+par(mfrow=c(2,2))
+plot(log(data$time1.growth) ~ log(data$SA.1),
+     xlab = "log Surface Area cm2", ylab = "Log Growth (Jan-March)", 
+     xlim=c(1,4), ylim=c(-1,2), pch = 16)
+mod.LL.1 <- lm(log(data$time1.growth) ~ log(data$SA.1))
+clip(1.3,3.8,0.1,2)
+abline(mod.LL.1)
+mtext(paste0("Slope = ", round(mod.LL.1$coefficients[2], digits = 3),"    ", "R^2 = ", round(summary(mod.LL.1)$r.squared, digits = 2))) 
 
+plot(log(data$time2.growth) ~ log(data$SA.2),
+     xlab = "log Surface Area cm2", ylab = "Log Growth (March-May)", 
+     xlim=c(1,4), ylim=c(-1,2), pch = 16)
+mod.LL.2 <- lm(log(data$time2.growth) ~ log(data$SA.2))
+clip(1.3,3.8,0.1,2)
+abline(mod.LL.2)
+mtext(paste0("Slope = ", round(mod.LL.2$coefficients[2], digits = 3),"    ", "R^2 = ", round(summary(mod.LL.2)$r.squared, digits = 2))) 
 
+plot(log(data$time3.growth) ~ log(data$SA.3),
+     xlab = "log Surface Area cm2", ylab = "Log Growth (May-August)", 
+     xlim=c(1,4), ylim=c(-1,2), pch = 16)
+mod.LL.3 <- lm(log(data$time3.growth) ~ log(data$SA.3))
+clip(1.3,3.5,-0.8,2)
+abline(mod.LL.3)
+mtext(paste0("Slope = ", round(mod.LL.3$coefficients[2], digits = 3),"    ", "R^2 = ", round(summary(mod.LL.3)$r.squared, digits = 2))) 
 
+plot(log(data$time4.growth) ~ log(data$SA.4),
+     xlab = "log Surface Area cm2", ylab = "Log Growth (August-November)", 
+     xlim=c(1,4), ylim=c(-1,2), pch = 16)
+mod.LL.4 <- lm(log(data$time4.growth) ~ log(data$SA.4))
+clip(1.3,3.5,-0.8,2)
+abline(mod.LL.4)
+mtext(paste0("Slope = ", round(mod.LL.4$coefficients[2], digits = 3),"    ", "R^2 = ", round(summary(mod.LL.4)$r.squared, digits = 2))) 
+dev.off()
 
 
 # #split each time point into 3rds
